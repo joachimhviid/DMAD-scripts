@@ -1,11 +1,13 @@
 {
   "name": "dmad-scripts",
-  "module": "index.ts",
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "run": "bun run index.ts"
   }
 }
