@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test'
-import type { Relation } from '@discrete-mathematics'
+import { type Relation, symmetricClosure } from '@discrete-mathematics'
 import {
   isAntiSymmetric,
   isEquivalence,
@@ -40,6 +40,33 @@ test('reflexive closure', () => {
   console.log('Reflexive closure relation: ', rClosure.sort())
 
   expect(rClosure).toEqual(expected)
+})
+
+test('symmetric closure', () => {
+  const elements = ['1', '2', '3', '4', '5']
+  const relation: Relation = [
+    ['1', '2'],
+    ['2', '2'],
+    ['2', '3'],
+    ['3', '4'],
+    ['4', '3'],
+  ]
+
+  const expected: Relation = [
+    ['1', '2'],
+    ['2', '1'],
+    ['2', '2'],
+    ['2', '3'],
+    ['3', '2'],
+    ['3', '4'],
+    ['4', '3'],
+  ]
+
+  const sClosure = symmetricClosure(relation)
+  console.log('Original relation: ', relation.sort())
+  console.log('Symmetric closure relation: ', sClosure.sort())
+
+  expect(sClosure).toEqual(expected)
 })
 
 test('transitive closure', () => {
