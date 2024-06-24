@@ -8,6 +8,7 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "run": "bun run index.ts"
+    "dev": "bun run index.ts",
+    "test": "bun test"
   }
 }
