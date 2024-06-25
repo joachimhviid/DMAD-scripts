@@ -4,7 +4,9 @@ import { performInductionTest } from '@discrete-mathematics'
 
 test('proof by induction', () => {
   // Define the specific expression and formula for the given problem
+  // Left side of the equation
   const expression: ExpressionProof = (i) => Math.pow(1 / 2, i - 1) - Math.pow(1 / 2, i)
+  // Right side of the equation
   const formula: Formula = (n) => 1 - Math.pow(1 / 2, n)
 
   // Perform the induction test
