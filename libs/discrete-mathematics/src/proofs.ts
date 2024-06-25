@@ -72,3 +72,35 @@ export function performInductionTest(expression: ExpressionProof, formula: Formu
 
   return true
 }
+
+/**
+ * Performs a direct proof.
+ * @param {Function} statement - The statement function that returns a boolean.
+ * @returns {boolean} True if the direct proof holds (i.e., the statement is true), otherwise false.
+ */
+export function performDirectProof(statement: () => boolean): boolean {
+  // If the statement is true, then the direct proof holds
+  return statement()
+}
+
+/**
+ * Performs a proof by contraposition.
+ * @param {Function} originalStatement - The original statement function that returns a boolean.
+ * @param {Function} contrapositiveStatement - The contrapositive statement function that returns a boolean.
+ * @returns {boolean} True if the proof by contraposition holds, otherwise false.
+ */
+export function performContrapositionProof(originalStatement: () => boolean, contrapositiveStatement: () => boolean): boolean {
+  // If the original statement and the contrapositive statement both return the same result, then the proof by contraposition holds
+  return originalStatement() === contrapositiveStatement()
+}
+
+/**
+ * Performs a proof by contradiction.
+ * @param {Function} assumption - The assumption function that returns a boolean.
+ * @param {Function} contradiction - The contradiction function that returns a boolean.
+ * @returns {boolean} True if the proof by contradiction holds, otherwise false.
+ */
+export function performContradictionProof(assumption: () => boolean, contradiction: () => boolean): boolean {
+  // If the assumption is true and the contradiction is also true, then the proof by contradiction holds
+  return assumption() && contradiction()
+}
