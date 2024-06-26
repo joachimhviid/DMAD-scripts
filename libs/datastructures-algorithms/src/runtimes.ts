@@ -1,3 +1,5 @@
+// Note to self: Probably better to just do the analysis by hand, but this is a good reference for the future.
+
 /**
  * Type definition for a function that takes a number and returns a number.
  */
@@ -51,45 +53,84 @@ export function solveRecurrence(a: number, b: number, f: FunctionOfN): string {
 }
 
 /**
+ * Calculates the growth rate of a function by comparing the output of the function for two different inputs.
+ *
+ * @param {FunctionOfN} f - The function to calculate the growth rate for.
+ * @returns {number} The growth rate of the function.
+ */
+export function getGrowthRate(f: FunctionOfN, C?: number): number {
+  let n1 = 10 ** 6 // A large value for n to simulate the behavior for large inputs
+  let n2 = n1 + 1 // A slightly larger value for n
+
+  let resultF1 = C ? C * f(n1) : f(n1)
+  let resultF2 = C ? C * f(n2) : f(n2)
+
+  // If the function's output is Infinity for the given inputs, reduce the inputs and try again
+  while (resultF1 === Infinity || resultF2 === Infinity) {
+    n1 /= 10
+    n2 /= 10
+    resultF1 = C ? C * f(n1) : f(n1)
+    resultF2 = C ? C * f(n2) : f(n2)
+  }
+
+  // Calculate the growth rate as the ratio of the change in output to the change in input
+  const growthRate = (resultF2 - resultF1) / (n2 - n1)
+  console.log('growthRate', growthRate)
+
+  return growthRate
+}
+
+/**
  * Checks if f is O(g), i.e., if f(n) <= C * g(n) for some constant C and for sufficiently large n.
  *
  * @param {FunctionOfN} f - The function to check.
  * @param {FunctionOfN} g - The function to compare against.
  * @returns {boolean} True if f is O(g), otherwise false.
  */
-export function isBigO(f: FunctionOfN, g: FunctionOfN): boolean {
-  const C = 1000 // A large constant to simulate the "for sufficiently large n" condition
-  let n = 10 ** 6 // A large value for n to simulate the behavior for large inputs
-
-  let resultF = f(n)
-  let resultG = C * g(n)
-  // console.log('resultF', resultF)
-  // console.log('resultG', resultG)
-
-  // if resultF/resultG is Infinity, then use a lower value
-  if (resultF === Infinity || resultG === Infinity) {
-    console.log('value too big')
-    n = 10
-    resultF = f(n)
-    resultG = C * g(n)
-    // console.log('resultF new', resultF)
-    // console.log('resultG new', resultG)
-  }
-
-  const n1 = n + 10
-
-  let resultF1 = f(n1)
-  let resultG1 = C * g(n1)
-  // console.log('resultF1', resultF1)
-  // console.log('resultG1', resultG1)
-
-
-  const deltaF = resultF1 - resultF
-  const deltaG = resultG1 - resultG
-  // console.log('deltaF', deltaF)
-  // console.log('deltaG', deltaG)
-
-  return deltaF <= deltaG
+export function isBigO(f: FunctionOfN, g: FunctionOfN, C: number): boolean {
+  return getGrowthRate(f) <= getGrowthRate(g, C)
 }
 
+/**
+ * Checks if f is Ω(g), i.e., if f(n) >= C * g(n) for some constant C and for sufficiently large n.
+ *
+ * @param {FunctionOfN} f - The function to check.
+ * @param {FunctionOfN} g - The function to compare against.
+ * @returns {boolean} True if f is Ω(g), otherwise false.
+ */
+export function isOmega(f: FunctionOfN, g: FunctionOfN, C: number): boolean {
+  return getGrowthRate(f) >= getGrowthRate(g, C)
+}
 
+/**
+ * Checks if f is Θ(g), i.e., if f(n) = C * g(n) for some constant C and for sufficiently large n.
+ *
+ * @param {FunctionOfN} f - The function to check.
+ * @param {FunctionOfN} g - The function to compare against.
+ * @returns {boolean} True if f is Θ(g), otherwise false.
+ */
+export function isTheta(f: FunctionOfN, g: FunctionOfN, C: number): boolean {
+  return isBigO(f, g, C) && isOmega(f, g, C)
+}
+
+/**
+ * Checks if f is o(g), i.e., if f(n) < C * g(n) for all constants C and for sufficiently large n.
+ *
+ * @param {FunctionOfN} f - The function to check.
+ * @param {FunctionOfN} g - The function to compare against.
+ * @returns {boolean} True if f is o(g), otherwise false.
+ */
+export function isLittleO(f: FunctionOfN, g: FunctionOfN, C: number): boolean {
+  return getGrowthRate(f) < getGrowthRate(g, C)
+}
+
+/**
+ * Checks if f is ω(g), i.e., if f(n) > C * g(n) for all constants C and for sufficiently large n.
+ *
+ * @param {FunctionOfN} f - The function to check.
+ * @param {FunctionOfN} g - The function to compare against.
+ * @returns {boolean} True if f is ω(g), otherwise false.
+ */
+export function isLittleOmega(f: FunctionOfN, g: FunctionOfN, C: number): boolean {
+  return getGrowthRate(f) > getGrowthRate(g, C)
+}

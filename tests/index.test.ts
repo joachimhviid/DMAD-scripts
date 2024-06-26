@@ -1,119 +1,46 @@
-import { expect, test } from 'bun:test'
-import { type Relation, symmetricClosure } from '@discrete-mathematics'
-import {
-  isAntiSymmetric,
-  isEquivalence,
-  isPartialOrder,
-  isReflexive,
-  isSymmetric,
-  isTransitive,
-  matrixToRelation,
-  reflexiveClosure,
-  relationToMatrix,
-  transitiveClosure,
-} from '@discrete-mathematics'
+import { test } from 'bun:test'
+import { isLittleO, isLittleOmega, isOmega, isTheta } from '@datastructures'
 
-test('reflexive closure', () => {
-  const elements = ['1', '2', '3', '4', '5']
-  const relation: Relation = [
-    ['1', '2'],
-    ['2', '2'],
-    ['2', '3'],
-    ['3', '4'],
-    ['4', '3'],
-  ]
+test('assignment', () => {
+  console.log(isOmega(
+    (n) => n,
+    (n) => Math.pow(Math.log(n), 2),
+    1000
+  ))
 
-  const expected: Relation = [
-    ['1', '1'],
-    ['1', '2'],
-    ['2', '2'],
-    ['2', '3'],
-    ['3', '3'],
-    ['3', '4'],
-    ['4', '3'],
-    ['4', '4'],
-    ['5', '5'],
-  ]
+  console.log(isLittleOmega(
+    (n) => Math.pow(4, n),
+    (n) => Math.pow(2, n),
+    1000
+  ))
 
-  const rClosure = reflexiveClosure(relation, elements)
-  console.log('Original relation: ', relation.sort())
-  console.log('Reflexive closure relation: ', rClosure.sort())
+  console.log(isTheta(
+    (n) => n+n+n,
+    (n) => n/3,
+    1000
+  ))
 
-  expect(rClosure).toEqual(expected)
-})
+  console.log(isTheta(
+    (n) => Math.pow(Math.log(n), 3),
+    (n) => 3 * Math.log(n),
+    1000
+  ))
 
-test('symmetric closure', () => {
-  const elements = ['1', '2', '3', '4', '5']
-  const relation: Relation = [
-    ['1', '2'],
-    ['2', '2'],
-    ['2', '3'],
-    ['3', '4'],
-    ['4', '3'],
-  ]
+  console.log(isLittleO(
+    (n) => Math.pow(n, 2) / Math.log(n),
+    (n) => Math.pow(n, 2) * Math.log(n),
+    1000
+  ))
 
-  const expected: Relation = [
-    ['1', '2'],
-    ['2', '1'],
-    ['2', '2'],
-    ['2', '3'],
-    ['3', '2'],
-    ['3', '4'],
-    ['4', '3'],
-  ]
+  console.log(isTheta(
+    (n) => Math.pow(n, 1.5) + Math.pow(n, 2),
+    (n) => Math.pow(n, 1.75),
+    1000
+  ))
 
-  const sClosure = symmetricClosure(relation)
-  console.log('Original relation: ', relation.sort())
-  console.log('Symmetric closure relation: ', sClosure.sort())
-
-  expect(sClosure).toEqual(expected)
-})
-
-test('transitive closure', () => {
-  const elements = ['1', '2', '3', '4', '5']
-  const relation: Relation = [
-    ['1', '2'],
-    ['2', '2'],
-    ['2', '3'],
-    ['3', '4'],
-    ['4', '3'],
-  ]
-
-  const expected: Relation = [
-    ['1', '2'],
-    ['1', '3'],
-    ['1', '4'],
-    ['2', '2'],
-    ['2', '3'],
-    ['2', '4'],
-    ['3', '3'],
-    ['3', '4'],
-    ['4', '3'],
-    ['4', '4'],
-  ]
-
-  const tClosureRelation = matrixToRelation(transitiveClosure(relationToMatrix(relation, elements)), elements)
-  console.log('Original relation: ', relation)
-  console.log('Transitive closure relation: ', tClosureRelation)
-
-  expect(tClosureRelation).toEqual(expected)
-})
-
-test('test properties of set', () => {
-  const elements = ['a', 'b', 'c']
-  const relation: Relation = [
-    ['a', 'a'],
-    ['a', 'b'],
-    ['b', 'b'],
-    ['c', 'a'],
-    ['c', 'c'],
-  ]
-
-  console.log('Original relation: ', relation)
-  console.log('Is reflexive?', isReflexive(relation, elements))
-  console.log('Is symmetric?', isSymmetric(relation))
-  console.log('Is anti-symmetric?', isAntiSymmetric(relation))
-  console.log('Is transitive?', isTransitive(relation))
-  console.log('Is equivalence relation?', isEquivalence(relation, elements))
-  console.log('Is partial order?', isPartialOrder(relation, elements))
+  console.log(isLittleO(
+    (n) => Math.pow(2, n),
+    (n) => Math.pow(n, n),
+    1000
+  ))
 })
