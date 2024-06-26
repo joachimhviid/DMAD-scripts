@@ -1,7 +1,7 @@
 import { test } from 'bun:test'
-import { findInsertionOrders } from '@datastructures'
+import { findInsertionOrders, findValidH2Values, type HashTable } from '@datastructures'
 
-test('assignment', () => {
+test('find valid first insertion into hash table', () => {
   const h1 = (x: number): number => {
     switch (x) {
       case 22: return 6;
@@ -24,4 +24,13 @@ test('assignment', () => {
 
   const insertionOrders = findInsertionOrders(values, tableSize, finalTable, h1)
   console.log('First inserts', insertionOrders.map((order) => order[0]))
+})
+
+test('find valid h2 value given h1 (double hashing)', () => {
+  const initialTable: HashTable = [13, 56, null, 32, 91, null, 82, null]
+  const insertedValue = 25
+  const desiredIndex = 5
+  const possibleH2Values = findValidH2Values(initialTable, insertedValue, desiredIndex, (x) => 3)
+  console.log(possibleH2Values)
+  // expect(possibleH2Values).toEqual([1, 2, 3, 4, 5])
 })

@@ -85,3 +85,31 @@ export function findInsertionOrders(values: number[], tableSize: number, finalTa
   generatePermutations(values, 0, values.length - 1)
   return possibleInsertionOrders
 }
+
+export function findValidH2Values(initialTable: HashTable, insertedValue: number, desiredIndex: number, h1Function: HashFunction): number[] {
+// Function to check if a particular h2 is valid
+  function isValidH2(h2: number): boolean {
+    const table: HashTable = [...initialTable]
+    const startIdx = h1Function(insertedValue)
+
+    for (let i = 0; i < table.length; i++) {
+      const idx = (startIdx + i * h2) % table.length
+      if (table[idx] === null) {
+        table[idx] = insertedValue
+        break
+      }
+    }
+
+    return table[desiredIndex] === insertedValue
+  }
+
+  // Check all possible h2 values
+  const possibleH2Values: number[] = []
+  for (let h2 = 0; h2 < initialTable.length; h2++) {
+    if (isValidH2(h2)) {
+      possibleH2Values.push(h2)
+    }
+  }
+
+  return possibleH2Values
+}
