@@ -1,7 +1,7 @@
 import { test } from 'bun:test'
 import { buildHuffmanTree, Node, getBitsForChar, getTotalBits } from '@datastructures'
 
-test('assignment', () => {
+test('huffman', () => {
   const nodes = [
     new Node('b', 90),
     new Node('c', 15),

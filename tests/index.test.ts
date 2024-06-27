@@ -1,20 +1,24 @@
 import { test } from 'bun:test'
-import { buildHuffmanTree, Node, getBitsForChar, getTotalBits } from '@datastructures'
+import { WeightedGraph } from '@datastructures'
 
 test('assignment', () => {
-  const nodes = [
-    new Node('b', 90),
-    new Node('c', 15),
-    new Node('d', 40),
-    new Node('f', 30),
-    new Node('g', 125),
-    new Node('h', 35),
-  ]
+  // Create a graph and make sure the adjacent nodes are in alphabetical order
+  const graph = new WeightedGraph()
+  graph.addEdge('a', 'c', 11)
+  graph.addEdge('a', 'f', 10)
+  graph.addEdge('a', 'h', 2)
+  graph.addEdge('a', 'i', 3)
+  graph.addEdge('b', 'c', 5)
+  graph.addEdge('b', 'd', 13)
+  graph.addEdge('c', 'h', 9)
+  graph.addEdge('d', 'h', 1)
+  graph.addEdge('h', 'i', 6)
+  graph.addEdge('i', 'g', 12)
+  graph.addEdge('i', 'f', 4)
+  graph.addEdge('f', 'e', 7)
+  graph.addEdge('e', 'g', 8)
 
-  const tree = buildHuffmanTree(nodes)
-  console.log('Huffman tree:', tree)
-  const bits = getBitsForChar(tree, 'd')
-  console.log('Bits for char d:', bits)
-  const totalBits = getTotalBits(tree)
-  console.log('Total bits:', totalBits)
+  const mst = graph.primsMST('a')
+  console.log('MST:', mst)
+
 })
