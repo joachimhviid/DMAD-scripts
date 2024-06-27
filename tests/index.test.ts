@@ -1,13 +1,17 @@
 import { test } from 'bun:test'
-import { RedBlackTree } from '@datastructures'
 
 test('assignment', () => {
-  const redblacktree = new RedBlackTree()
-  const keysToInsert = [18, 9, 21, 7, 15, 24, 4, 11, 16]
-  redblacktree.insertKeys(keysToInsert)
-  redblacktree.print()
+  // It is not true that there exists an integer x such that for all integers y, the equation x+y=2x holds
+  const set1 = (x: number) => {
+    for (let y = -10; y <= 10; y++) {
+      if (x + y !== 2 * x) {
+        return true
+      }
+    }
+    return false
+  }
 
-  redblacktree.insert(25)
-  redblacktree.print()
-
+  for (let i = 0; i < 10; i++) {
+    console.log(set1(i))
+  }
 })
