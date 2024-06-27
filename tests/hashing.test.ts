@@ -1,5 +1,5 @@
 import { test } from 'bun:test'
-import { findInsertionOrders, findValidH2Values, type HashTable } from '@datastructures'
+import { findInsertionOrders, findValidH2Values, type HashTable, tryInsertWithLinearProbing } from '@datastructures'
 
 test('find valid first insertion into hash table', () => {
   const h1 = (x: number): number => {
@@ -33,4 +33,18 @@ test('find valid h2 value given h1 (double hashing)', () => {
   const possibleH2Values = findValidH2Values(initialTable, insertedValue, desiredIndex, (x) => 3)
   console.log(possibleH2Values)
   // expect(possibleH2Values).toEqual([1, 2, 3, 4, 5])
+})
+
+test('find valid insert indexes', () => {
+  const initialTable: HashTable = [12, null, 10, null, 22, null, 31]
+  const postTable: HashTable = [12, 97, 10, null, 22, null, 31]
+
+  for (let i = 0; i < 7; i++) {
+    // console.log('Trying value', i)
+    const table: HashTable = tryInsertWithLinearProbing(initialTable, [97], (x) => i)
+    if (table.every((val, i) => val === postTable[i])) {
+      console.log('Valid value', i)
+    }
+  }
+
 })

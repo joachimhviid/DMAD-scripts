@@ -75,7 +75,7 @@ export function getGrowthRate(f: FunctionOfN, C?: number): number {
 
   // Calculate the growth rate as the ratio of the change in output to the change in input
   const growthRate = (resultF2 - resultF1) / (n2 - n1)
-  console.log('growthRate', growthRate)
+  // console.log('growthRate', growthRate)
 
   return growthRate
 }
@@ -133,4 +133,15 @@ export function isLittleO(f: FunctionOfN, g: FunctionOfN, C: number): boolean {
  */
 export function isLittleOmega(f: FunctionOfN, g: FunctionOfN, C: number): boolean {
   return getGrowthRate(f) > getGrowthRate(g, C)
+}
+
+export function factorialize(num: number): number {
+  let result = num
+  if (num === 0 || num === 1)
+    return 1
+  while (num > 1) {
+    num--
+    result *= num
+  }
+  return result
 }

@@ -1,3 +1,5 @@
+import { PriorityQueue, DisjointSet } from './structures.ts'
+
 export class Graph {
   adjacencyList: Map<string, string[]>
 
@@ -244,6 +246,24 @@ export function findSCCs(graph: Graph): string[][] {
 
 type Edge = { node: string, weight: number };
 
+export class DirectedWeightedGraph {
+  adjacencyList: Map<string, Edge[]>
+
+  constructor() {
+    this.adjacencyList = new Map()
+  }
+
+  addEdge(node1: string, node2: string, weight: number) {
+    if (!this.adjacencyList.has(node1)) this.adjacencyList.set(node1, [])
+    if (!this.adjacencyList.has(node2)) this.adjacencyList.set(node2, [])
+    this.adjacencyList.get(node1)!.push({ node: node2, weight })
+  }
+
+  getAdjVertices(node: string): Edge[] {
+    return this.adjacencyList.get(node) || []
+  }
+}
+
 export class WeightedGraph {
   adjacencyList: Map<string, Edge[]>
 
@@ -289,4 +309,110 @@ export class WeightedGraph {
 
     return { mst, order } // Return both the MST and the order of nodes
   }
+
+  kruskalMST() {
+    const mst = new WeightedGraph()
+    const nodes = Array.from(this.adjacencyList.keys())
+    const edges: { node1: string, node2: string, weight: number }[] = []
+    const disjointSet = new DisjointSet()
+    let firstSkippedEdge: { node1: string, node2: string, weight: number } | null = null
+
+    // Initialize disjoint set with all nodes
+    nodes.forEach(node => disjointSet.makeSet(node))
+
+    // Get all edges from the graph
+    for (let node of nodes) {
+      const neighbors = this.adjacencyList.get(node)!
+      for (let neighbor of neighbors) {
+        // To avoid duplicate edges, only add edges in one direction
+        if (node < neighbor.node) {
+          edges.push({ node1: node, node2: neighbor.node, weight: neighbor.weight })
+        }
+      }
+    }
+
+    // Sort edges by weight
+    edges.sort((a, b) => a.weight - b.weight)
+
+    // Add edges to the MST, skipping those that create a cycle
+    for (let edge of edges) {
+      console.log('processing edge', edge)
+      if (disjointSet.findSet(edge.node1) !== disjointSet.findSet(edge.node2)) {
+        console.log('adding edge', edge)
+        mst.addEdge(edge.node1, edge.node2, edge.weight)
+        disjointSet.union(edge.node1, edge.node2)
+      } else {
+        // If this edge would create a cycle and we haven't skipped any edges yet, record it
+        if (firstSkippedEdge === null) {
+          firstSkippedEdge = edge
+        }
+      }
+    }
+
+    return { graph: mst, firstSkippedEdge }
+  }
+
+  toString(): string {
+    let result = ''
+    for (let [node, edges] of this.adjacencyList.entries()) {
+      result += `${node} -> `
+      for (let edge of edges) {
+        result += `${edge.node}(${edge.weight}), `
+      }
+      result = result.slice(0, -2) // Remove trailing comma and space
+      result += '\n'
+    }
+    return result
+  }
+}
+
+function initSingleSource(graph: DirectedWeightedGraph, source: string) {
+  const dist = new Map<string, number>()
+  const prev = new Map<string, string | null>()
+
+  for (let vertex of graph.adjacencyList.keys()) {
+    dist.set(vertex, Infinity)
+    prev.set(vertex, null)
+  }
+  dist.set(source, 0)
+
+  return { dist, prev }
+}
+
+function relax(u: string, v: string, weight: number, dist: Map<string, number>, prev: Map<string, string | null>, pq: PriorityQueue<string>) {
+  if (dist.get(v)! > dist.get(u)! + weight) {
+    dist.set(v, dist.get(u)! + weight)
+    prev.set(v, u)
+    pq.decreaseKey(v, dist.get(v)!)
+    return true // Distance was updated
+  }
+  return false // Distance was not updated
+}
+
+export function dijkstra(graph: DirectedWeightedGraph, source: string) {
+  const { dist, prev } = initSingleSource(graph, source)
+  const pq = new PriorityQueue<string>()
+  const S = new Set<string>()
+  const removedFromQueue = new Set<string>()
+  let relaxCount = 0
+  let relaxChanges = 0
+
+  graph.adjacencyList.forEach((_, vertex) => {
+    pq.enqueue(vertex, dist.get(vertex)!)
+  })
+
+  while (!pq.isEmpty()) {
+    const u = pq.dequeue()!
+    S.add(u)
+    removedFromQueue.add(u)
+
+    for (let { node: v, weight } of graph.getAdjVertices(u)) {
+      // if (!S.has(v)) {
+      relaxCount++
+      if (relax(u, v, weight, dist, prev, pq)) relaxChanges++
+      // }
+    }
+  }
+
+  return { dist, prev, removedFromQueue, relaxCount, relaxChanges }
 }

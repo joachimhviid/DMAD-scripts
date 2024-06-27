@@ -144,3 +144,113 @@ export function validPositionsForKey(keys: number[], key: number, heapType: Heap
 
   return Array.from(positions).sort((a, b) => a - b)
 }
+
+export function isMinHeap(array: number[]): boolean {
+  for (let i = 0; i <= Math.floor(array.length / 2) - 1; i++) {
+    const left = 2 * i + 1
+    const right = 2 * i + 2
+
+    if (left < array.length && array[i] > array[left]) {
+      return false
+    }
+
+    if (right < array.length && array[i] > array[right]) {
+      return false
+    }
+  }
+
+  return true
+}
+
+export function isMaxHeap(array: number[]): boolean {
+  for (let i = 0; i <= Math.floor(array.length / 2) - 1; i++) {
+    const left = 2 * i + 1
+    const right = 2 * i + 2
+
+    if (left < array.length && array[i] < array[left]) {
+      return false
+    }
+
+    if (right < array.length && array[i] < array[right]) {
+      return false
+    }
+  }
+
+  return true
+}
+
+export function buildMaxHeap(array: number[]): number[] {
+  const heap = [...array] // Copy the array
+  for (let i = Math.floor(heap.length / 2) - 1; i >= 0; i--) {
+    maxHeapify(heap, i)
+  }
+  return heap
+}
+
+export function buildMinHeap(array: number[]): number[] {
+  const heap = [...array] // Copy the array
+  for (let i = Math.floor(heap.length / 2) - 1; i >= 0; i--) {
+    minHeapify(heap, i)
+  }
+  return heap
+}
+
+
+export class PriorityQueue<T> {
+  private heap: { key: number, value: T }[] = []
+
+  enqueue(value: T, key: number) {
+    this.heap.push({ key, value })
+    this.heap.sort((a, b) => a.key - b.key)
+  }
+
+  dequeue(): T | undefined {
+    const item = this.heap.shift()
+    return item ? item.value : undefined
+  }
+
+  isEmpty(): boolean {
+    return this.heap.length === 0
+  }
+
+  decreaseKey(value: T, newKey: number) {
+    for (let i = 0; i < this.heap.length; i++) {
+      if (this.heap[i].value === value) {
+        this.heap[i].key = newKey
+        this.heap.sort((a, b) => a.key - b.key)
+        break
+      }
+    }
+  }
+}
+
+export class DisjointSet {
+  private parent: Map<string, string>
+
+  constructor() {
+    this.parent = new Map()
+  }
+
+  makeSet(x: string) {
+    this.parent.set(x, x)
+  }
+
+  findSet(x: string): string {
+    if (this.parent.get(x) === x) {
+      return x
+    }
+    const parent = this.findSet(this.parent.get(x)!)
+    this.parent.set(x, parent) // Path compression
+    return parent
+  }
+
+  union(x: string, y: string) {
+    const xRoot = this.findSet(x)
+    const yRoot = this.findSet(y)
+
+    // Arbitrarily make the parent of xRoot as yRoot
+    if (xRoot !== yRoot) {
+      this.parent.set(xRoot, yRoot)
+    }
+  }
+}

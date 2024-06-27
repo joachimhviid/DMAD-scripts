@@ -2,23 +2,37 @@ export type HashTable = (number | null)[]
 export type HashFunction = (x: number) => number
 
 // Hash function as given in the problem
-function h1(x: number): number {
-  switch (x) {
-    case 22:
-      return 6
-    case 33:
-      return 1
-    case 44:
-      return 4
-    case 55:
-      return 1
-    case 66:
-      return 6
-    case 77:
-      return 1
-    default:
-      throw new Error('Unknown input')
+// function h1(x: number): number {
+//   switch (x) {
+//     case 22:
+//       return 6
+//     case 33:
+//       return 1
+//     case 44:
+//       return 4
+//     case 55:
+//       return 1
+//     case 66:
+//       return 6
+//     case 77:
+//       return 1
+//     default:
+//       throw new Error('Unknown input')
+//   }
+// }
+
+export function tryInsertWithLinearProbing(table: HashTable, values: number[], hashFunction: HashFunction): HashTable {
+  const tableCopy = [...table]
+  for (const value of values) {
+    console.log('Inserting:', value)
+    let index = hashFunction(value)
+    while (tableCopy[index] !== null) {
+      index = (index + 1) % tableCopy.length
+    }
+    tableCopy[index] = value
+    console.log('Table after inserting:', tableCopy)
   }
+  return tableCopy
 }
 
 // Function to simulate the insertion process using linear probing
@@ -112,4 +126,35 @@ export function findValidH2Values(initialTable: HashTable, insertedValue: number
   }
 
   return possibleH2Values
+}
+
+export function findPossibleIndices(initialTable: HashTable, finalTable: HashTable, insertedValue: number): number[] {
+  // Function to simulate the insertion process using a given hash function
+  function insertWithHashFunction(table: HashTable, value: number, hashFunction: HashFunction): number {
+    let index = hashFunction(value)
+    while (table[index] !== null) {
+      index = (index + 1) % table.length
+    }
+    table[index] = value
+    return index
+  }
+
+  // Function to check if a particular hash function is valid
+  function isValidHashFunction(hashFunction: HashFunction): boolean {
+    const table: HashTable = [...initialTable]
+    insertWithHashFunction(table, insertedValue, hashFunction)
+    return table.every((val, i) => val === finalTable[i])
+  }
+
+  // Check all possible hash functions
+  const possibleIndices: number[] = []
+  for (let i = 0; i < initialTable.length; i++) {
+    const hashFunction: HashFunction = (x) => (x + i) % initialTable.length
+    if (isValidHashFunction(hashFunction)) {
+      const index = insertWithHashFunction([...initialTable], insertedValue, hashFunction)
+      possibleIndices.push(index)
+    }
+  }
+
+  return possibleIndices
 }

@@ -1,5 +1,14 @@
 import { test } from 'bun:test'
-import { Graph, bfs, dfs, classifyEdges, allTopologicalSorts, findSCCs, WeightedGraph } from '@datastructures'
+import {
+  Graph,
+  bfs,
+  dfs,
+  classifyEdges,
+  allTopologicalSorts,
+  findSCCs,
+  WeightedGraph,
+  DirectedWeightedGraph, dijkstra,
+} from '@datastructures'
 
 test('bfs', () => {
   // Create a graph and make sure the adjacent nodes are in alphabetical order
@@ -91,4 +100,42 @@ test('mst prim', () => {
   const mst = graph.primsMST('a')
   console.log('MST:', mst)
 
+})
+
+test('dijkstra', () => {
+  const graph = new DirectedWeightedGraph()
+  graph.addEdge('a', 'b', 4)
+  graph.addEdge('a', 'g', 7)
+  graph.addEdge('b', 'c', 1)
+  graph.addEdge('b', 'd', 2)
+  graph.addEdge('c', 'a', 2)
+  graph.addEdge('c', 'f', 6)
+  graph.addEdge('d', 'c', 1)
+  graph.addEdge('d', 'f', 4)
+  graph.addEdge('e', 'c', 8)
+  graph.addEdge('f', 'e', 1)
+  graph.addEdge('g', 'e', 6)
+  graph.addEdge('g', 'c', 4)
+
+  const order = dijkstra(graph, 'a')
+  console.log('Dijkstra order:', order)
+})
+
+test('mst kruskal', () => {
+  const graph = new WeightedGraph()
+  graph.addEdge('a', 'e', 8)
+  graph.addEdge('a', 'c', 6)
+  graph.addEdge('a', 'g', 9)
+  graph.addEdge('b', 'g', 3)
+  graph.addEdge('b', 'h', 11)
+  graph.addEdge('b', 'd', 5)
+  graph.addEdge('c', 'd', 2)
+  graph.addEdge('c', 'f', 12)
+  graph.addEdge('d', 'g', 7)
+  graph.addEdge('e', 'f', 0)
+  graph.addEdge('g', 'h', 10)
+
+  const mst = graph.kruskalMST()
+  console.log('MST:', mst.graph.toString())
+  console.log(mst.firstSkippedEdge)
 })

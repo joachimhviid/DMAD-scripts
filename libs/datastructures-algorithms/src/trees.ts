@@ -67,8 +67,17 @@ export class RedBlackTree {
   root: Node | null = null
 
   rotateLeft(node: Node) {
-    let temp = node.right!
+    if (node.right === null) {
+      throw new Error('Cannot perform left rotation on a node without a right child')
+    }
+    const temp = node.right
     node.right = temp.left
+
+    if (temp.left !== null) {
+      temp.left.parent = node
+    }
+
+    temp.parent = node.parent
 
     if (node.parent === null) {
       this.root = temp
@@ -83,8 +92,17 @@ export class RedBlackTree {
   }
 
   rotateRight(node: Node) {
-    let temp = node.left!
+    if (node.left === null) {
+      throw new Error('Cannot perform right rotation on a node without a left child')
+    }
+    const temp = node.left
     node.left = temp.right
+
+    if (temp.right !== null) {
+      temp.right.parent = node
+    }
+
+    temp.parent = node.parent
 
     if (node.parent === null) {
       this.root = temp
@@ -179,5 +197,18 @@ export class RedBlackTree {
 
     this.print(node.left, spaceCount + 4, 'LEFT')
     this.print(node.right, spaceCount + 4, 'RIGHT')
+  }
+
+  toString(node: Node | null = this.root, spaceCount: number = 0, label: string = 'ROOT'): string {
+    if (!node) return ''
+
+    const space = ' '.repeat(spaceCount)
+    const color = node.color === TreeNodeColor.RED ? 'R' : 'B'
+    let result = `${space}${label}[${color}]: ${node.key}\n`
+
+    result += this.toString(node.left, spaceCount + 4, 'LEFT')
+    result += this.toString(node.right, spaceCount + 4, 'RIGHT')
+
+    return result
   }
 }
