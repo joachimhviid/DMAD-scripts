@@ -179,6 +179,36 @@ export function isMaxHeap(array: number[]): boolean {
   return true
 }
 
+export function insertMax(heap: number[], key: number): void {
+  // Add the new key at the end of the heap
+  heap.push(key)
+
+  // Get the index of the new key
+  let i = heap.length - 1
+
+  // Bubble up the new key as long as it's larger than its parent
+  while (i !== 0 && heap[parent(i)] < heap[i]) {
+    // Swap the new key with its parent
+    [heap[i], heap[parent(i)]] = [heap[parent(i)], heap[i]]
+
+    // Move up to the parent index
+    i = parent(i)
+  }
+}
+
+// Helper function to get the parent index of a node at index i
+function parent(i: number): number {
+  return Math.floor((i - 1) / 2)
+}
+
+export function buildMaxHeapWithInsertion(array: number[]): number[] {
+  const heap: number[] = []
+  for (let i = 0; i < array.length; i++) {
+    insertMax(heap, array[i])
+  }
+  return heap
+}
+
 export function buildMaxHeap(array: number[]): number[] {
   const heap = [...array] // Copy the array
   for (let i = Math.floor(heap.length / 2) - 1; i >= 0; i--) {
@@ -195,6 +225,58 @@ export function buildMinHeap(array: number[]): number[] {
   return heap
 }
 
+export function insertMin(heap: number[], key: number): void {
+  // Add the new key at the end of the heap
+  heap.push(key)
+
+  // Get the index of the new key
+  let i = heap.length - 1
+
+  // Bubble up the new key as long as it's smaller than its parent
+  while (i !== 0 && heap[parent(i)] > heap[i]) {
+    // Swap the new key with its parent
+    [heap[i], heap[parent(i)]] = [heap[parent(i)], heap[i]]
+
+    // Move up to the parent index
+    i = parent(i)
+  }
+}
+
+export function buildMinHeapWithInsertion(array: number[]): number[] {
+  const heap: number[] = []
+  for (let i = 0; i < array.length; i++) {
+    insertMin(heap, array[i])
+  }
+  return heap
+}
+
+export function deleteKeyMaxHeap(heap: number[], i: number): void {
+  // Increase the value of key to maximum
+  heap[i] = Number.MAX_SAFE_INTEGER
+
+  // Bubble up the replaced key to the root
+  while (i !== 0 && heap[parent(i)] < heap[i]) {
+    [heap[i], heap[parent(i)]] = [heap[parent(i)], heap[i]]
+    i = parent(i)
+  }
+
+  // Extract the maximum
+  extractMax(heap)
+}
+
+export function deleteKeyMinHeap(heap: number[], i: number): void {
+  // Decrease the value of key to minimum
+  heap[i] = Number.MIN_SAFE_INTEGER
+
+  // Bubble up the replaced key to the root
+  while (i !== 0 && heap[parent(i)] > heap[i]) {
+    [heap[i], heap[parent(i)]] = [heap[parent(i)], heap[i]]
+    i = parent(i)
+  }
+
+  // Extract the minimum
+  extractMin(heap)
+}
 
 export class PriorityQueue<T> {
   private heap: { key: number, value: T }[] = []
