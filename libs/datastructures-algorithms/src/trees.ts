@@ -49,6 +49,29 @@ export function updateNode(v: TreeNode | null): void {
   }
 }
 
+function updateNodeProperties(node: Node): void {
+  if (!node) return
+
+  let min = node.key
+  let max = node.key
+  let ssg = 0
+
+  if (node.left) {
+    min = node.left.min
+    ssg += node.left.ssg + (node.key - node.left.max) ** 2
+  }
+
+  if (node.right) {
+    max = node.right.max
+    ssg += node.right.ssg + (node.right.min - node.key) ** 2
+  }
+
+  node.min = min
+  node.max = max
+  node.ssg = ssg
+}
+
+
 enum TreeNodeColor {
   RED,
   BLACK
@@ -58,8 +81,14 @@ class Node {
   left: Node | null = null
   right: Node | null = null
   color: TreeNodeColor = TreeNodeColor.RED
+  min: number
+  max: number
+  ssg: number
 
   constructor(public key: number, public parent: Node | null = null) {
+    this.min = key
+    this.max = key
+    this.ssg = 0
   }
 }
 
@@ -89,6 +118,9 @@ export class RedBlackTree {
 
     temp.left = node
     node.parent = temp
+
+    updateNodeProperties(node)
+    updateNodeProperties(temp)
   }
 
   rotateRight(node: Node) {
@@ -114,6 +146,41 @@ export class RedBlackTree {
 
     temp.right = node
     node.parent = temp
+
+    updateNodeProperties(node)
+    updateNodeProperties(temp)
+  }
+
+
+  insert(key: number) {
+    let node = this.root
+    let parent: Node | null = null
+
+    while (node !== null) {
+      parent = node
+      if (key < node.key) {
+        node = node.left
+      } else if (key > node.key) {
+        node = node.right
+      } else {
+        return
+      }
+    }
+
+    let newNode = new Node(key, parent)
+    if (parent === null) {
+      this.root = newNode
+    } else if (newNode.key < parent.key) {
+      parent.left = newNode
+    } else {
+      parent.right = newNode
+    }
+
+    this.fixTree(newNode)
+    while (newNode) {
+      updateNodeProperties(newNode)
+      newNode = newNode.parent!
+    }
   }
 
   fixTree(node: Node) {
@@ -155,32 +222,6 @@ export class RedBlackTree {
     this.root!.color = TreeNodeColor.BLACK
   }
 
-  insert(key: number) {
-    let node = this.root
-    let parent: Node | null = null
-
-    while (node !== null) {
-      parent = node
-      if (key < node.key) {
-        node = node.left
-      } else if (key > node.key) {
-        node = node.right
-      } else {
-        return
-      }
-    }
-
-    let newNode = new Node(key, parent)
-    if (parent === null) {
-      this.root = newNode
-    } else if (newNode.key < parent.key) {
-      parent.left = newNode
-    } else {
-      parent.right = newNode
-    }
-
-    this.fixTree(newNode)
-  }
 
   insertKeys(keys: number[]) {
     for (const key of keys) {
@@ -204,7 +245,8 @@ export class RedBlackTree {
 
     const space = ' '.repeat(spaceCount)
     const color = node.color === TreeNodeColor.RED ? 'R' : 'B'
-    let result = `${space}${label}[${color}]: ${node.key}\n`
+    // let result = `${space}${label}[${color}]: ${node.key}\n`
+    let result = `${space}${label}[${color}]: ${node.key}, min: ${node.min}, max: ${node.max}, ssg: ${node.ssg}\n`
 
     result += this.toString(node.left, spaceCount + 4, 'LEFT')
     result += this.toString(node.right, spaceCount + 4, 'RIGHT')

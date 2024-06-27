@@ -1,22 +1,66 @@
 import { test } from 'bun:test'
 import {
-  allTopologicalSorts,
-  bfs,
-  buildHuffmanTree,
-  buildMaxHeap, classifyEdges, dfs, dijkstra, DirectedWeightedGraph,
-  findPossibleIndices, findSCCs,
-  findValidH2Values, getBitsForChar, getTotalBits, Graph,
-  type HashTable,
-  isMaxHeap, Node, partition, RedBlackTree,
-  tryInsertWithLinearProbing, WeightedGraph,
-} from '@datastructures'
+  areEquivalent,
+  conjunction,
+  disjunction,
+  equivalence,
+  generateTruthTable,
+  implication,
+  negation,
+} from '@discrete-mathematics'
 
 test('assignment', () => {
-  const redblack = new RedBlackTree()
-  const keys = [24, 18, 26, 5, 20, 27, 2, 7, 23]
-  redblack.insertKeys(keys)
-  console.log(redblack.toString())
+  const variables = ['p', 'q', 'r', 's']
 
-  redblack.insert(21)
-  console.log(redblack.toString())
+  console.table(generateTruthTable(
+    (values) => disjunction(values['p'], disjunction(values['q'], values['r'])),
+    variables,
+  ))
+
+  console.table(generateTruthTable(
+    (values) => equivalence(conjunction(values['p'], values['q']), disjunction(values['p'], values['q'])),
+    ['p', 'q'],
+  ))
+
+  console.table(generateTruthTable(
+    (values) => implication(conjunction(values['p'], negation(values['q'])), conjunction(values['p'], negation(values['q']))),
+    ['p', 'q'],
+  ))
+
+  const table1 = generateTruthTable(
+    (values) => disjunction(
+      negation(values['p']),
+      negation(values['q']),
+    ),
+    ['p', 'q'],
+  )
+
+  const table2 = generateTruthTable(
+    (values) => negation(
+      conjunction(
+        values['p'],
+        values['q'],
+      ),
+    ),
+    ['p', 'q'],
+  )
+
+  console.log(areEquivalent(table1, table2))
+
+  console.table(generateTruthTable(
+    (values) => disjunction(
+      conjunction(
+        values['p'],
+        values['q'],
+      ),
+      conjunction(
+        values['r'],
+        values['s'],
+      ),
+    ),
+    variables,
+  ))
+
+
+
 })
